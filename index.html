@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User guide · Footfall</title>
+<meta name="description" content="Footfall for Unity 6: playtest heatmaps of where players move, die and trigger events, drawn in the Scene View, by Exaweft.">
+<style>
+:root { --bg:#ffffff; --surface:#f4f7f9; --text:#16212b; --muted:#566673; --border:#d9e2e8; --accent:#0f8a66;
+  --code-bg:#f0f4f7; --pre-bg:#111f2b; --pre-text:#e6edf3; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0b151f; --surface:#111f2b; --text:#e6edf3; --muted:#9db0bb;
+  --border:#26394a; --accent:#56e4b1; --code-bg:#172a3a; --pre-bg:#111f2b; --pre-text:#e6edf3; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+header { border-bottom:1px solid var(--border); background:var(--surface); }
+.bar { max-width:1180px; margin:0 auto; padding:12px 16px; display:flex; flex-wrap:wrap; gap:8px 24px; align-items:baseline; }
+.brand { font-weight:700; color:var(--accent); text-decoration:none; font-size:18px; }
+.brand span { color:var(--muted); font-weight:400; font-size:14px; margin-left:6px; }
+nav.top a { color:var(--text); text-decoration:none; margin-right:16px; }
+nav.top a[aria-current] { color:var(--accent); font-weight:600; }
+.layout { max-width:1180px; margin:0 auto; padding:0 16px; display:grid; grid-template-columns:240px minmax(0,1fr); gap:40px; }
+aside { position:sticky; top:0; align-self:start; max-height:100vh; overflow:auto; padding:24px 0; font-size:14px; }
+aside a { display:block; color:var(--muted); text-decoration:none; padding:3px 0; }
+aside a:hover { color:var(--accent); }
+main { padding:8px 0 64px; min-width:0; }
+h1 { font-size:32px; line-height:1.2; margin:28px 0 16px; }
+h2 { font-size:24px; margin:40px 0 12px; padding-top:8px; border-top:1px solid var(--border); }
+h3 { font-size:19px; margin:28px 0 8px; }
+a { color:var(--accent); }
+code { font:14px/1.5 ui-monospace,"Cascadia Code",Consolas,monospace; background:var(--code-bg); padding:1px 5px; border-radius:4px; }
+pre { background:var(--pre-bg); color:var(--pre-text); padding:14px 16px; border-radius:6px; overflow-x:auto; }
+pre code { background:none; padding:0; color:inherit; }
+.table { overflow-x:auto; margin:16px 0; }
+table { border-collapse:collapse; width:100%; font-size:15px; }
+th, td { text-align:left; vertical-align:top; padding:7px 10px; border-bottom:1px solid var(--border); }
+th { background:var(--surface); }
+li { margin:4px 0; }
+footer { color:var(--muted); font-size:13px; border-top:1px solid var(--border); padding:16px 0; margin-top:48px; }
+@media (max-width:820px) { .layout { grid-template-columns:1fr; gap:0; } aside { position:static; max-height:none; padding:12px 0 0; } }
+</style>
+</head>
+<body>
+<header><div class="bar"><a class="brand" href="index.html">Footfall<span>1.0.0 · Exaweft</span></a>
+<nav class="top"><a href="index.html" aria-current="page">User guide</a><a href="api.html">API overview</a><a href="changelog.html">Changelog</a></nav></div></header>
+<div class="layout">
+<aside aria-label="On this page"><a href="#1-quick-start">1. Quick start</a>
+<a href="#2-recording-events">2. Recording events</a>
+<a href="#3-recording-movement">3. Recording movement</a>
+<a href="#4-sessions">4. Sessions</a>
+<a href="#5-collecting-sessions-from-testers">5. Collecting sessions from testers</a>
+<a href="#6-the-sessions-window">6. The Sessions window</a>
+<a href="#7-the-footfall-panel">7. The Footfall panel</a>
+<a href="#8-density-heatmaps">8. Density heatmaps</a>
+<a href="#9-replay-top-view-and-export-png">9. Replay, Top View and Export PNG</a>
+<a href="#10-release-builds-and-performance">10. Release builds and performance</a>
+<a href="#11-the-session-file-format">11. The session file format</a>
+<a href="#12-what-has-been-tested">12. What has been tested</a>
+<a href="#13-known-limitations">13. Known limitations</a>
+<a href="#14-the-demo-sample">14. The Demo sample</a>
+<a href="#15-support">15. Support</a></aside>
+<main>
+<h1 id="footfall-user-guide">Footfall user guide</h1>
+<p>Footfall records where players move, die and trigger events during playtests, saves each session to a local file, and draws it in your Scene View: markers, trails and a density heatmap. It works in the Editor's Play Mode and in development builds, and is off in release builds unless you turn it on.</p>
+<ol>
+<li>Quick start: your first heatmap in about five minutes</li>
+<li>Recording events with <code>Heatmaps.Record</code></li>
+<li>Recording movement with Heatmap Recorder</li>
+<li>Sessions: when they start and end, and where the files go</li>
+<li>Collecting sessions from testers</li>
+<li>The Sessions window</li>
+<li>The Footfall panel in the Scene View</li>
+<li>Density heatmaps</li>
+<li>Replay, Top View and Export PNG</li>
+<li>Release builds and performance</li>
+<li>The session file format</li>
+<li>What has been tested</li>
+<li>Known limitations</li>
+<li>The Demo sample</li>
+<li>Support</li>
+</ol>
+<h2 id="1-quick-start">1. Quick start</h2>
+<ol>
+<li><strong>Install.</strong> In the Package Manager's <strong>My Assets</strong>, download and import Footfall; it goes into <code>Assets/Footfall</code>. Check the Console is free of errors. It needs Unity 6 (6000.0 or newer) and no other packages.</li>
+<li><strong>Record movement.</strong> Select your player and add the <strong>Heatmap Recorder</strong> component (Add Component &gt; Exaweft &gt; Footfall &gt; Heatmap Recorder, or search for it). It samples the player's position every half second.</li>
+<li><p><strong>Record an event.</strong> Where your player dies, add one line. Here <code>Die</code> stands for your game's own death code; call <code>Heatmaps.Record</code> wherever that is:</p>
+<pre><code class="language-csharp">using Exaweft.Footfall;
+using UnityEngine;
+
+public class PlayerHealth : MonoBehaviour
+{
+    void Die(string killer)
+    {
+        Heatmaps.Record(&quot;death&quot;, transform.position, &quot;enemy&quot;, killer);
+    }
+}</code></pre></li>
+</ol>
+<ol>
+<li><strong>Play.</strong> Enter Play Mode, play for a minute and die a few times, then stop. Footfall saved the session to a file.</li>
+<li><strong>Look.</strong> Open <strong>Tools &gt; Exaweft &gt; Footfall &gt; Sessions</strong> and press <strong>Editor Sessions</strong>. Then, in the Scene View, turn on the <strong>Footfall</strong> panel: with the pointer over the Scene View, press the <strong>`</strong> key to open the Overlays menu and click <strong>Footfall</strong>. Your path shows as a trail and each death as a red marker. Tick <strong>Density</strong> and press <strong>Top View</strong> to see where deaths cluster.</li>
+</ol>
+<p>To try it without writing any code first, open the <strong>Demo</strong> sample (section 14): it comes with eight ready-made sessions.</p>
+<p>No player yet, as in a new empty project? Add a Capsule, give it the Heatmap Recorder, and use this stand-in, which walks in a circle and dies every five seconds:</p>
+<pre><code class="language-csharp">using Exaweft.Footfall;
+using UnityEngine;
+
+public class WalkAndDie : MonoBehaviour
+{
+    float nextDeath = 5;
+
+    void Update()
+    {
+        float t = Time.time * 0.5f;
+        transform.position = new Vector3(Mathf.Cos(t) * 6, 1, Mathf.Sin(t) * 6);
+        if (Time.time &gt; nextDeath)
+        {
+            Heatmaps.Record(&quot;death&quot;, transform.position, &quot;enemy&quot;, &quot;spikes&quot;);
+            nextDeath += 5;
+        }
+    }
+}</code></pre>
+<h2 id="2-recording-events">2. Recording events</h2>
+<p><code>Heatmaps.Record(name, position)</code> records that something happened at a world position. The name is your own: use <code>&quot;death&quot;</code>, <code>&quot;checkpoint&quot;</code>, <code>&quot;jump&quot;</code>, <code>&quot;purchase&quot;</code>, or anything else worth seeing on the map. Each name gets its own colour in the Scene View, and the name <code>&quot;death&quot;</code> is also counted in the Sessions window's <strong>Deaths</strong> column.</p>
+<p>Events can carry tags, as key and value strings, to say more about what happened:</p>
+<pre><code class="language-csharp">Heatmaps.Record(&quot;death&quot;, pos);                                       // no tags
+Heatmaps.Record(&quot;death&quot;, pos, &quot;enemy&quot;, &quot;bat&quot;);                       // one tag
+Heatmaps.Record(&quot;death&quot;, pos, (&quot;enemy&quot;, &quot;bat&quot;), (&quot;wave&quot;, &quot;3&quot;));      // any number of tags</code></pre>
+<p>Tags show when you click a marker, and the panel's <strong>Tags</strong> card counts events by any tag (deaths per wave, say) and can show only one value (section 7).</p>
+<ul>
+<li>Calls can come from any script, at any time. If no session is open, the first call starts one.</li>
+<li>Calls do nothing in release builds (section 10), so you can leave them in your code.</li>
+<li>For 2D games, record positions with z = 0; Footfall then draws on the XY plane.</li>
+</ul>
+<h2 id="3-recording-movement">3. Recording movement</h2>
+<p>Add <strong>Heatmap Recorder</strong> to anything whose path you want to see: usually the player, but also enemies, vehicles or NPCs. Each recorder is one <em>track</em> in the session, drawn as one trail. A GameObject takes one recorder.</p>
+<div class="table"><table><thead><tr><th>Setting</th><th>What it does</th></tr></thead><tbody>
+<tr><td>Sample Interval</td><td>Seconds of game time between samples. Default 0.5; at least 0.05.</td></tr>
+<tr><td>Track Name</td><td>The trail's name, such as &quot;Player&quot;. Empty uses the GameObject's name.</td></tr>
+</tbody></table></div>
+<p>You can also add it from code, for objects spawned at runtime:</p>
+<pre><code class="language-csharp">var recorder = enemy.AddComponent&lt;HeatmapRecorder&gt;();
+recorder.TrackName = &quot;Enemy &quot; + number;
+recorder.SampleInterval = 1f;</code></pre>
+<p>Samples use scaled game time, so a paused game (<code>Time.timeScale = 0</code>) records nothing.</p>
+<h2 id="4-sessions">4. Sessions</h2>
+<p>A <strong>session</strong> is one file holding one play of one scene.</p>
+<ul>
+<li><strong>It starts</strong> on the first event or sample.</li>
+<li><strong>It ends</strong> when the active scene changes, when the game quits or leaves Play Mode, or when you call <code>Heatmaps.EndSession()</code>. Call that yourself to split sessions, for example at the end of each run of a level.</li>
+<li><strong>Files go to</strong> <code>Application.persistentDataPath/Footfall/Sessions</code>, one <code>.footfall</code> file per session. Change <code>Heatmaps.OutputFolder</code> to use another folder. Project Settings &gt; Exaweft &gt; Footfall shows the folder.</li>
+<li><strong>Writes are buffered</strong> and saved every two seconds, so a crash loses at most the last two seconds. <code>Heatmaps.Flush()</code> saves straight away.</li>
+</ul>
+<p>Useful settings, all read at the start of the next session:</p>
+<div class="table"><table><thead><tr><th>Property</th><th>Use</th></tr></thead><tbody>
+<tr><td><code>Heatmaps.TesterLabel</code></td><td>A name saved with the session, such as &quot;Sam&quot; or &quot;Discord-3&quot;. Also set by starting the game with <code>-footfallTester &quot;Sam&quot;</code>.</td></tr>
+<tr><td><code>Heatmaps.Paused</code></td><td>While true, nothing is recorded. Use it to skip menus and cutscenes, or to record only after a tester agrees.</td></tr>
+<tr><td><code>Heatmaps.MaxPositionSamples</code></td><td>The most samples a session keeps (default 100,000, about 14 hours of one recorder).</td></tr>
+<tr><td><code>Heatmaps.MaxEvents</code></td><td>The most events a session keeps (default 20,000). Kept apart from samples, so long sessions never lose their deaths.</td></tr>
+</tbody></table></div>
+<p><code>Heatmaps.IsRecording</code>, <code>Heatmaps.CurrentSessionPath</code>, <code>Heatmaps.LastSessionPath</code> and <code>Heatmaps.SessionTime</code> tell you what is happening, for example to show testers where their file went.</p>
+<h2 id="5-collecting-sessions-from-testers">5. Collecting sessions from testers</h2>
+<p>Testers need nothing but your development build. There is no server, account or upload.</p>
+<ol>
+<li>Send a development build (Build Profiles &gt; Development Build). Release builds record nothing unless you turn recording on (section 10).</li>
+<li>Ask testers to start the game with a label, such as a shortcut ending in <code>-footfallTester &quot;Sam&quot;</code>, or set <code>Heatmaps.TesterLabel</code> from your own name prompt.</li>
+<li>Ask them to send you the files in their sessions folder: <code>Application.persistentDataPath/Footfall/Sessions</code>. On Windows that is <code>%USERPROFILE%\AppData\LocalLow\&lt;company&gt;\&lt;product&gt;\Footfall\Sessions</code>.</li>
+<li>Put everyone's files in one folder and use <strong>Import Folder…</strong> in the Sessions window. Subfolders are included.</li>
+</ol>
+<h2 id="6-the-sessions-window">6. The Sessions window</h2>
+<p><strong>Tools &gt; Exaweft &gt; Footfall &gt; Sessions</strong> lists the sessions you have loaded. Every session in the list is drawn in the Scene View, unless a filter hides it.</p>
+<ul>
+<li><strong>Import File…</strong> adds one <code>.footfall</code> file; <strong>Import Folder…</strong> adds every file in a folder and its subfolders.</li>
+<li><strong>Editor Sessions</strong> adds the sessions recorded in this Editor's Play Mode.</li>
+<li><strong>Reload</strong> reads every loaded file again; <strong>Clear</strong> empties the list. Files are never deleted.</li>
+<li><strong>Filters:</strong> Scene, Build, Tester, Has event (only sessions with that event) and a From–To date range. <strong>Reset</strong> shows them all. The line under the filters totals what's shown: sessions, testers, time played and deaths.</li>
+<li><strong>Columns:</strong> Started, Scene, Tester, Build, Duration, Events, Deaths and Notes.</li>
+<li><strong>Notes</strong> flag sessions that ended without closing (the game stopped or crashed; data up to the last save is kept) or that reached a cap.</li>
+<li><strong>Right-click</strong> a session to replay it in the Scene View, show its file in Explorer or Finder, or remove it from the list. Double-click also replays it.</li>
+</ul>
+<p>The list is kept with your project (in <code>UserSettings</code>), so it is still there after a restart.</p>
+<h2 id="7-the-footfall-panel">7. The Footfall panel</h2>
+<p>Turn it on from the Scene View's Overlays menu (the <strong>`</strong> key over the Scene View). It has four cards. Collapsed, it shows as the footprint icon.</p>
+<p><strong>Show</strong></p>
+<ul>
+<li><strong>Points</strong>: a marker at every event, coloured by event type. <strong>Trails</strong>: each track's path. <strong>Density</strong>: the heatmap grid (section 8).</li>
+<li><strong>This scene only</strong>: show only sessions recorded in the scenes you have open. Untick it to see sessions from any scene, for example when a level was renamed.</li>
+<li>The chips count the sessions and events shown. Below them, the legend lists each event type with its count; click one to hide or show its markers.</li>
+<li><strong>Click a marker</strong> in the Scene View to see here what it was, when, its tags, and its tester, scene and build.</li>
+</ul>
+<p><strong>Tags</strong> (shown when the loaded events have tags)</p>
+<ul>
+<li><strong>Tag</strong>: pick a tag key, such as <code>wave</code> or <code>enemy</code>, to count the shown events by its values.</li>
+<li><strong>Show</strong>: pick one value to show only those events: markers, the legend and event density. <strong>(all)</strong> shows every value.</li>
+</ul>
+<p><strong>Density</strong> (shown when Density is ticked): see section 8.</p>
+<p><strong>Replay</strong>: see section 9.</p>
+<p>Below the cards: <strong>Top View</strong>, <strong>Export PNG…</strong> and <strong>Sessions Window</strong>.</p>
+<h2 id="8-density-heatmaps">8. Density heatmaps</h2>
+<p>The grid counts what happened in each square and colours it from quiet to busy.</p>
+<div class="table"><table><thead><tr><th>Setting</th><th>What it does</th></tr></thead><tbody>
+<tr><td>Counts</td><td>What the grid counts: one event type, such as <code>death</code>, or <strong>Movement</strong> for where players spent their time.</td></tr>
+<tr><td>Cell size</td><td>The width of each square, in world units.</td></tr>
+<tr><td>Floor gap</td><td>Points in one square this far apart in height count as separate floors, each drawn at its own height. 0 keeps one flat grid. Default 2.5.</td></tr>
+<tr><td>Colours</td><td>Heat, Viridis (readable with most colour blindness) or Red.</td></tr>
+<tr><td>Opacity</td><td>How much of the level shows through.</td></tr>
+<tr><td>Plane</td><td>XZ (the ground of a 3D level), XY (a 2D level), or Auto: XY when every point has z = 0.</td></tr>
+</tbody></table></div>
+<p>The line below the settings says how many events fill how many cells, and the count in the busiest cell.</p>
+<h2 id="9-replay-top-view-and-export-png">9. Replay, Top View and Export PNG</h2>
+<ul>
+<li><strong>Replay</strong> one session: pick it in the Replay card (or double-click it in the Sessions window), then drag the scrubber or press <strong>Play</strong>. Markers appear as they happen and the trail grows. <strong>Stop</strong> shows every session again. The speed menu plays at 1x to 16x.</li>
+<li><strong>Top View</strong> looks straight down on everything Footfall draws, sized to fit (or straight on, for 2D).</li>
+<li><strong>Export PNG…</strong> saves the Scene View as you see it, overlays included, as a PNG for Discord, a devlog or a design review.</li>
+</ul>
+<h2 id="10-release-builds-and-performance">10. Release builds and performance</h2>
+<ul>
+<li><strong>Off in release builds.</strong> Recording runs in the Editor and in development builds. In a release build every <code>Heatmaps</code> call does nothing and <strong>Heatmap Recorder</strong> turns itself off, so you can leave them in. A call that does nothing still costs one check, and, as with <code>Debug.Log</code>, your arguments are still worked out before the call: a string built for a tag, say. If an argument is costly to work out, wrap the call in <code>if (Heatmaps.IsEnabled)</code>.</li>
+<li><strong>Bad positions are skipped.</strong> A position that isn't a finite number (NaN or infinity, usually a bug elsewhere in the game) is not recorded, with one warning per run.</li>
+<li><strong>Recording a release build</strong>, such as a closed playtest build: tick <strong>Record in release builds</strong> in Project Settings &gt; Exaweft &gt; Footfall. It adds the <code>FOOTFALL_RECORD_IN_RELEASE</code> scripting define for the current build platform, so set it again after switching platform. <code>Heatmaps.IsEnabled</code> says whether recording runs.</li>
+<li><strong>No allocations while recording</strong>, after the first use, as long as the event names and tags you pass are existing strings (literals or cached), not strings built on each call. The tuple form of <code>Record</code> builds a small array each call; to avoid that, keep a <code>HeatmapTag[]</code> and pass it.</li>
+<li><strong>Small files.</strong> A sample is one short text line. An hour of one recorder at 0.5 s is about 7,200 lines.</li>
+</ul>
+<h2 id="11-the-session-file-format">11. The session file format</h2>
+<p>Session files are UTF-8 text, so you can open them in any editor or read them in your own tools.</p>
+<ul>
+<li>Line 1 is a JSON header: format and version, Footfall version, session ID, scene and scene path, build version, Unity version, platform, whether it was the Editor or a development build, tester label and start time (UTC).</li>
+<li>Each later line is a record: a letter, then tab-separated fields. <code>T</code> declares a track, <code>P</code> is a position sample, <code>E</code> is an event with its tags, <code>C</code> notes that a cap was reached and <code>X</code> ends the session.</li>
+<li>Every file carries a format version (1 for this release). Later versions of Footfall will still read version 1 files.</li>
+</ul>
+<p>To read sessions in your own Editor tools, use <code>SessionFile.Read(path)</code>, which returns a <code>SessionData</code> with the header, tracks, samples and events.</p>
+<h2 id="12-what-has-been-tested">12. What has been tested</h2>
+<ul>
+<li><strong>Unity versions:</strong> 6000.0.85f2 and 6000.5.9f1, on Windows.</li>
+<li><strong>Render pipelines:</strong> Built-in and URP. Footfall draws in the Editor only, with no shaders of its own, so it doesn't depend on the render pipeline.</li>
+<li><strong>Games:</strong> a 2D shooter, Unity's FPS Microgame (3D, several floors) and a 3D management game with up to 21 tracks at once, plus the Demo sample.</li>
+<li><strong>Recording:</strong> in the Editor's Play Mode. Development and release builds use the same code path, switched by the setting in section 10.</li>
+</ul>
+<h2 id="13-known-limitations">13. Known limitations</h2>
+<ul>
+<li>The density grid counts squares on a plane, split into floors by height. It is not a 3D volume.</li>
+<li>Very long trails are thinned to 2,000 points each when drawn. The file keeps every sample.</li>
+<li>Recording uses Unity's main thread and scaled game time; nothing is recorded while <code>Time.timeScale</code> is 0.</li>
+<li>Sessions are local files. Collecting them from testers is up to you (section 5).</li>
+</ul>
+<h2 id="14-the-demo-sample">14. The Demo sample</h2>
+<p>The Demo sample is in <code>Assets/Footfall/Samples/Demo</code>, imported with the rest of Footfall. It has a small 3D level, &quot;The Crossing&quot;, built from Unity primitives, simulated players and eight ready-made sessions. Its README walks through the panel.</p>
+<h2 id="15-support">15. Support</h2>
+<p>Email support@exaweft.com with your Unity version, what you expected and what happened. A session file that shows the problem helps.</p>
+<footer>Footfall 1.0.0 by Exaweft. Support: <a href="mailto:support@exaweft.com">support@exaweft.com</a></footer>
+</main>
+</div>
+</body>
+</html>
